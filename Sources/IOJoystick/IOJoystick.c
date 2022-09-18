@@ -696,13 +696,13 @@ IOJoystick* IOJoystickAttach(int idxOfWhich)
     return NULL;
   }
   
-  IOJoystick* j = (IOJoystick*)malloc(sizeof(IOJoystick));
-  j->iD = idxOfWhich;
   recDevice *device = gpDeviceList;
   
-  for(int index = j->iD; index > 0; index--)
+  for(int index = idxOfWhich; index > 0; index--)
     device = device->pNext;
   
+  IOJoystick* j = (IOJoystick*)malloc(sizeof(IOJoystick));
+  j->iD = idxOfWhich;
   j->name = device->product; // UNSAFE ******
   j->numberOfAxis = device->axes;
   j->numberOfHats = device->hats;
@@ -717,9 +717,15 @@ IOJoystick* IOJoystickAttach(int idxOfWhich)
 
 void IOJoystickDetach(IOJoystick* j)
 {
-  free(j->axisData);
-  free(j->buttonData);
-  free(j->hatData);
+  if(NULL != j->axisData)
+    free(j->axisData);
+  
+  if(NULL != j->buttonData)
+    free(j->buttonData);
+  
+  if(NULL != j->hatData)
+    free(j->hatData);
+  
   free(j);
 }
 
